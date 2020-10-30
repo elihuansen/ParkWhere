@@ -1,5 +1,6 @@
-package io.vertx.starter;
+package io.parkwhere;
 
+import io.parkwhere.config.ConfigManager;
 import io.vertx.core.AbstractVerticle;
 
 public class MainVerticle extends AbstractVerticle {
@@ -8,7 +9,6 @@ public class MainVerticle extends AbstractVerticle {
   public void start() {
     vertx.createHttpServer()
         .requestHandler(req -> req.response().end("Hello Vert.x!"))
-        .listen(8080);
+        .listen(ConfigManager.PORT);
   }
-
 }

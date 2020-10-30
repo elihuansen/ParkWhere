@@ -1,5 +1,6 @@
-package io.vertx.starter;
+package io.parkwhere;
 
+import io.parkwhere.config.ConfigManager;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.codec.BodyCodec;
@@ -25,7 +26,7 @@ class MainVerticleTest {
   @DisplayName("Check that the server has started")
   void checkServerHasStarted(Vertx vertx, VertxTestContext testContext) {
     WebClient webClient = WebClient.create(vertx);
-    webClient.get(8080, "localhost", "/")
+    webClient.get(ConfigManager.PORT, "localhost", "/")
       .as(BodyCodec.string())
       .send(testContext.succeeding(response -> testContext.verify(() -> {
         assertEquals(200, response.statusCode());
