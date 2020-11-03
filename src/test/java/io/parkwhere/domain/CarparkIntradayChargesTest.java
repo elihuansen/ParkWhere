@@ -8,22 +8,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-
 @DisplayName("Carpark Intraday Charges Test")
 public class CarparkIntradayChargesTest {
     @Test
     @DisplayName("Check that the correct charge is calculated for a mix of different rates 1")
     void checkCarparkCharge1() {
-        RatesCollection ratesCollection = new RatesCollection();
-        ratesCollection.addBlockRates(
-            LocalDateTime.now().getDayOfWeek(),
-            new BlockRate(true, 2.0, 60),
-            new BlockRate("00:00", "07:59", 1.2, 30),
-            new BlockRate("08:00", "17:59", 1.4, 30),
-            new BlockRate("18:00", "23:59", 3)
-        );
+        RatesCollection ratesCollection = new RatesCollection()
+            .addWeekdayBlockRates(
+                new BlockRate(true, 2.0, 60),
+                new BlockRate("00:00", "07:59", 1.2, 30),
+                new BlockRate("08:00", "17:59", 1.4, 30),
+                new BlockRate("18:00", "23:59", 3)
+            );
 
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
@@ -41,12 +37,11 @@ public class CarparkIntradayChargesTest {
     @Test
     @DisplayName("Check that the correct charge is calculated for a mix of different rates 2")
     void checkCarparkCharge2() {
-        RatesCollection ratesCollection = new RatesCollection();
-        ratesCollection.addBlockRates(
-            LocalDateTime.now().getDayOfWeek(),
-            new BlockRate(true, 5, 120),
-            new BlockRate("08:00", "07:59", 0.1, 1)
-        );
+        RatesCollection ratesCollection = new RatesCollection()
+            .addWeekdayBlockRates(
+                new BlockRate(true, 5, 120),
+                new BlockRate("08:00", "07:59", 0.1, 1)
+            );
 
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
@@ -58,38 +53,17 @@ public class CarparkIntradayChargesTest {
     }
 
     @Test
-    @DisplayName("Check that the correct charge is calculated for a mix of different rates 3")
-    void checkCarparkCharge3() {
-        RatesCollection ratesCollection = new RatesCollection();
-        ratesCollection.addBlockRates(
-            LocalDateTime.now().getDayOfWeek(),
-            new BlockRate(true, 5, 120),
-            new BlockRate("08:00", "04:00", 20),
-            new BlockRate("04:01", "07:59", 3)
-        );
-
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
-
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "04:00");
-        double expected = 5 + 20;
-
-        Assertions.assertEquals(expected, result);
-    }
-
-    @Test
     @DisplayName("Check that the correct charge is calculated for a mix of different convoluted rates")
     void checkCarparkChargeConvulatedRates() {
-        RatesCollection ratesCollection = new RatesCollection();
-        ratesCollection.addBlockRates(
-            LocalDateTime.now().getDayOfWeek(),
-            new BlockRate(true, 1, 43),
-            new BlockRate("07:28", "08:08", 0.24, 3),
-            new BlockRate("08:09", "12:33", 0.1, 1),
-            new BlockRate("12:34", "18:53", 0.33, 12),
-            new BlockRate("18:54", "23:50", 4.08),
-            new BlockRate("23:51", "07:27", 40)
-        );
+        RatesCollection ratesCollection = new RatesCollection()
+            .addWeekdayBlockRates(
+                new BlockRate(true, 1, 43),
+                new BlockRate("07:28", "08:08", 0.24, 3),
+                new BlockRate("08:09", "12:33", 0.1, 1),
+                new BlockRate("12:34", "18:53", 0.33, 12),
+                new BlockRate("18:54", "23:50", 4.08),
+                new BlockRate("23:51", "07:27", 40)
+            );
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
@@ -108,11 +82,10 @@ public class CarparkIntradayChargesTest {
     @Test
     @DisplayName("Check that the charge for a carpark with whole day parking is correct")
     void checkCorrectChargeIsCalculatedForSimpleCarpark() {
-        RatesCollection ratesCollection = new RatesCollection();
-        ratesCollection.addBlockRates(
-            LocalDateTime.now().getDayOfWeek(),
-            new BlockRate("06:00", "05:59", 2.4)
-        );
+        RatesCollection ratesCollection = new RatesCollection()
+            .addWeekdayBlockRates(
+                new BlockRate("06:00", "05:59", 2.4)
+            );
 
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();

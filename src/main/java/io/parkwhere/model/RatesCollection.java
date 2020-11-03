@@ -1,9 +1,10 @@
 package io.parkwhere.model;
 
 import io.parkwhere.exceptions.MultipleFirstBlockException;
+import io.parkwhere.utils.TimeHelper;
+import io.parkwhere.utils.datastructures.CircularLinkedList;
 
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -13,50 +14,61 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class RatesCollection {
 
-    private HashMap<DayOfWeek, List<BlockRate>> blockRatesByDay;
+    private CircularLinkedList<BlockRate> circularBlockRates;
     private HashMap<DayOfWeek, BlockRate> firstBlockByDay;
 
     public RatesCollection() {
-        this.blockRatesByDay = new HashMap<>();
-        this.firstBlockByDay = new HashMap<>();
+        this.circularBlockRates = new CircularLinkedList<>();
+        this.firstBlockByDay    = new HashMap<>();
     }
 
-    public RatesCollection(HashMap<DayOfWeek, List<BlockRate>> blockRatesByDay, HashMap<DayOfWeek, BlockRate> firstBlockByDay) {
-        this.blockRatesByDay = blockRatesByDay;
-        this.firstBlockByDay = firstBlockByDay;
-    }
-
-    public RatesCollection addBlockRate(DayOfWeek day, BlockRate blockRate) {
-        putDayIfAbsent(day);
-        if (blockRate.isFirstBlock()) {
-            setDayFirstBlock(day, blockRate);
-        }
-        blockRatesByDay.get(day).add(blockRate);
-        return this;
-    }
-
-    public RatesCollection addBlockRates(DayOfWeek day, BlockRate... blockRates) {
-        putDayIfAbsent(day);
-        List<BlockRate> dayBlockRates = blockRatesByDay.get(day);
-        for (BlockRate blockRate : blockRates) {
-            if (blockRate.isFirstBlock()) {
-                setDayFirstBlock(day, blockRate);
-            } else {
-                dayBlockRates.add(blockRate);
+    public RatesCollection addWeekdayBlockRates(BlockRate... blockRates) {
+        DayOfWeek[] weekdays = new DayOfWeek[]{
+          DayOfWeek.MONDAY,
+          DayOfWeek.TUESDAY,
+          DayOfWeek.WEDNESDAY,
+          DayOfWeek.THURSDAY,
+          DayOfWeek.FRIDAY
+        };
+        for (DayOfWeek weekday : weekdays) {
+            for (BlockRate blockRate : blockRates) {
+                blockRate = blockRate.copy();
+                blockRate.setStartDay(weekday);
+                LocalTime rateStartTime = blockRate.getStartTime();
+                LocalTime rateEndTime = blockRate.getEndTime();
+                if (rateStartTime != null && rateEndTime != null) {
+                    if (rateEndTime.isBefore(rateStartTime)) {
+                        blockRate.setEndDay(weekday.plus(1));
+                    } else {
+                        blockRate.setEndDay(weekday);
+                    }
+                }
+                if (blockRate.isFirstBlock()) {
+                    setDayFirstBlock(blockRate.getStartDay(), blockRate);
+                } else {
+                    circularBlockRates.add(blockRate);
+                }
             }
         }
         return this;
     }
 
-    public List<BlockRate> getDayBlockRates(DayOfWeek day) {
-        return blockRatesByDay.getOrDefault(day, null);
+    public RatesCollection addBlockRates(BlockRate... blockRates) {
+        for (BlockRate blockRate : blockRates) {
+            if (blockRate.isFirstBlock()) {
+                setDayFirstBlock(blockRate.getStartDay(), blockRate);
+            } else {
+                circularBlockRates.add(blockRate);
+            }
+        }
+        return this;
     }
 
     public BlockRate getDayFirstBlock(DayOfWeek day) {
         return firstBlockByDay.getOrDefault(day, null);
     }
 
-    public List<Charge> computeCharges(LocalDateTime fromDateTime, LocalDateTime toDateTime) {
+    public List<Charge> calculateCharges(LocalDateTime fromDateTime, LocalDateTime toDateTime) {
         List<Charge> charges = new ArrayList<>();
         LocalDateTime currentDateTime = LocalDateTime.from(fromDateTime);
 
@@ -67,71 +79,58 @@ public class RatesCollection {
             currentDateTime = currentDateTime.plusMinutes(blockMins + 1);
         }
 
+        CircularLinkedList<BlockRate>.Node node = getStartingBlockRate(currentDateTime);
+
         while (currentDateTime.isBefore(toDateTime)) {
-            for (BlockRate rate : blockRatesByDay.get(currentDateTime.getDayOfWeek())) {
-                int blockMins = rate.getBlockMins();
+            BlockRate rate = node.getItem();
+            int blockMins  = rate.getBlockMins();
 
-                if (rate.isTimed()) {
+            long numMinsInBlock = TimeHelper.minutesBetween(currentDateTime, rate.getEndDay(), rate.getEndTime());
+            if (currentDateTime.plusMinutes(numMinsInBlock).isAfter(toDateTime)) {
+                numMinsInBlock = MINUTES.between(currentDateTime, toDateTime);
+            }
 
-                    LocalTime rateStartTime = rate.getStartTime();
-                    LocalTime rateEndTime = rate.getEndTime();
-
-                    boolean isOvernightRate = rateEndTime.isBefore(rateStartTime);
-                    boolean isWithinRateTiming =
-                            isBetweenInclusive(rateStartTime, currentDateTime.toLocalTime(), rateEndTime) ||
-                                    (
-                                            isOvernightRate
-                                    )
-                            ;
-
-                    if (isWithinRateTiming) {
-
-                        LocalTime exitTime = toDateTime.toLocalTime();
-                        LocalTime chargeEndTime;
-                        if (currentDateTime.getDayOfYear() < toDateTime.getDayOfYear()) {
-                            chargeEndTime = rateEndTime;
-                        } else {
-                            if (isOvernightRate) {
-                                chargeEndTime = exitTime;
-                            } else {
-                                chargeEndTime = rateEndTime.isBefore(exitTime) ? rateEndTime : exitTime;
-                            }
-                        }
-
-                        long numMinsInBlock;
-                        if (isOvernightRate && currentDateTime.getDayOfYear() < toDateTime.getDayOfYear()) {
-                            LocalDateTime nextDay = LocalDateTime.of(currentDateTime.getYear(), currentDateTime.getMonth(), currentDateTime.getDayOfMonth(), chargeEndTime.getHour(), chargeEndTime.getMinute()).plusDays(1);
-                            numMinsInBlock = MINUTES.between(currentDateTime, nextDay);
-                        } else {
-                            numMinsInBlock = MINUTES.between(currentDateTime.toLocalTime(), chargeEndTime);
-                        }
-
-                        int numBlocks;
-                        if (rate.isPerEntry()) {
-                            numBlocks = 1;
-                        } else {
-                            numBlocks = (int) numMinsInBlock / blockMins;
-                            boolean hasPartialBlock = numMinsInBlock % blockMins > 0;
-                            if (rate.isPartThereof() && hasPartialBlock) {
-                                numBlocks++;
-                            }
-                        }
-                        charges.add(new Charge(rate, numBlocks, currentDateTime, currentDateTime.plusMinutes(numMinsInBlock)));
-
-                        currentDateTime = currentDateTime.plusMinutes(numMinsInBlock + 1);
-                        if (currentDateTime.isEqual(toDateTime) || currentDateTime.isAfter(toDateTime)) {
-                            return charges;
-                        }
+            if (numMinsInBlock > 0) {
+                int numBlocks;
+                if (rate.isPerEntry()) {
+                    numBlocks = 1;
+                } else {
+                    numBlocks = (int) numMinsInBlock / blockMins;
+                    boolean hasPartialBlock = numMinsInBlock % blockMins > 0;
+                    if (rate.isPartThereof() && hasPartialBlock) {
+                        numBlocks++;
                     }
                 }
+
+                charges.add(new Charge(rate, numBlocks, currentDateTime, currentDateTime.plusMinutes(numMinsInBlock)));
+                currentDateTime = currentDateTime.plusMinutes(numMinsInBlock + 1);
+                if (currentDateTime.isEqual(toDateTime) || currentDateTime.isAfter(toDateTime)) {
+                    return charges;
+                }
             }
+            node = node.getNext();
         }
         return charges;
     }
 
-    private void putDayIfAbsent(DayOfWeek day) {
-        blockRatesByDay.putIfAbsent(day, new ArrayList<>());
+    private boolean isBetweenDays(DayOfWeek start, DayOfWeek target, DayOfWeek end) {
+        return start.getValue() <= target.getValue() && target.getValue() <= end.getValue();
     }
+
+    private CircularLinkedList<BlockRate>.Node getStartingBlockRate(LocalDateTime dateTime) {
+        CircularLinkedList<BlockRate>.Node node = circularBlockRates.getHead();
+        DayOfWeek day = dateTime.getDayOfWeek();
+        circularBlockRates.display();
+        while (true) {
+            BlockRate rate = node.getItem();
+            if (isBetweenDays(rate.getStartDay(), day, rate.getEndDay()) &&
+                isBetweenInclusive(rate.getStartTime(), dateTime.toLocalTime(), rate.getEndTime())) {
+                return node;
+            }
+            node = node.getNext();
+        }
+    }
+
 
     private void setDayFirstBlock(DayOfWeek day, BlockRate firstBlock) {
         if (firstBlockByDay.containsKey(day)) {

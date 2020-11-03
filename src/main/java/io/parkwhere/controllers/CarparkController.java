@@ -44,6 +44,6 @@ public class CarparkController {
     }
 
     private List<Charge> getCharges(Carpark carpark, LocalDateTime entranceDateTime, LocalDateTime exitDateTime) {
-        return carpark.getRatesCollection().computeCharges(entranceDateTime, exitDateTime);
+        return carpark.getRatesCollection().calculateCharges(entranceDateTime, exitDateTime);
     }
 }
