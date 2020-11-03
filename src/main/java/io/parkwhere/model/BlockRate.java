@@ -16,12 +16,14 @@ public class BlockRate {
         this.isFirstBlock = isFirstBlock;
         this.amount = amount;
         this.blockMins = blockMins;
+        this.isPartThereof = true;
     }
 
     public BlockRate(String startTime, String endTime, double amount) {
         this.startTime = LocalTime.parse(startTime);
         this.endTime   = LocalTime.parse(endTime);
-        this.amount   = amount;
+        this.amount    = amount;
+        this.isPartThereof = true;
     }
 
     public BlockRate(String startTime, String endTime, double amount, int blockMins) {
@@ -34,12 +36,17 @@ public class BlockRate {
         this.isFirstBlock = isFirstBlock;
     }
 
+    public BlockRate(String startTime, String endTime, double amount, int blockMins, boolean isFirstBlock, boolean isPartThereof) {
+        this(startTime, endTime, amount, blockMins, isFirstBlock);
+        this.isPartThereof = isPartThereof;
+    }
+
     public boolean isPerEntry() {
         return this.blockMins == 0;
     }
 
     public boolean isPartThereof() {
-        return true;
+        return isPartThereof;
     }
 
     public void setPartThereof(boolean partThereof) {
