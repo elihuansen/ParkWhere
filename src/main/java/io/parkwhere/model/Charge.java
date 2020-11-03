@@ -1,6 +1,7 @@
 package io.parkwhere.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Charge {
     private BlockRate blockRate;
@@ -21,12 +22,18 @@ public class Charge {
 
     @Override
     public String toString() {
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("EEE MM/dd HH:mm");
+        String blockChargeString = (blockRate.isPerEntry())
+            ? "$" + blockRate.getAmount() + " per entry"
+            : "$" + blockRate.getAmount() + " per " + blockRate.getBlockMins() + "m"
+        ;
         return "Charge{" +
-                "blockRate=" + blockRate +
-                ", from=" + from +
-                ", to=" + to +
-                ", numBlocks=" + numBlocks +
-                '}';
+                from.format(f) +
+                " to " + to.format(f) + " - " +
+                blockChargeString + " " +
+                "= $" + getAmount() + " " +
+                "(" + numBlocks + " blocks)" +
+                "}";
     }
 
 }

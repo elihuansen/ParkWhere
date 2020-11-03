@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
+import static io.parkwhere.utils.TimeHelper.WEEKDAYS;
 import static io.parkwhere.utils.TimeHelper.isBetweenInclusive;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
@@ -23,34 +24,41 @@ public class RatesCollection {
     }
 
     public RatesCollection addWeekdayBlockRates(BlockRate... blockRates) {
-        DayOfWeek[] weekdays = new DayOfWeek[]{
-          DayOfWeek.MONDAY,
-          DayOfWeek.TUESDAY,
-          DayOfWeek.WEDNESDAY,
-          DayOfWeek.THURSDAY,
-          DayOfWeek.FRIDAY
-        };
-        for (DayOfWeek weekday : weekdays) {
-            for (BlockRate blockRate : blockRates) {
-                blockRate = blockRate.copy();
-                blockRate.setStartDay(weekday);
-                LocalTime rateStartTime = blockRate.getStartTime();
-                LocalTime rateEndTime = blockRate.getEndTime();
-                if (rateStartTime != null && rateEndTime != null) {
-                    if (rateEndTime.isBefore(rateStartTime)) {
-                        blockRate.setEndDay(weekday.plus(1));
-                    } else {
-                        blockRate.setEndDay(weekday);
-                    }
-                }
-                if (blockRate.isFirstBlock()) {
-                    setDayFirstBlock(blockRate.getStartDay(), blockRate);
-                } else {
-                    circularBlockRates.add(blockRate);
-                }
-            }
+        for (DayOfWeek weekday : WEEKDAYS) {
+            addBlockRatesForDay(weekday, blockRates);
         }
         return this;
+    }
+
+    public RatesCollection addSatBlockRates(BlockRate... blockRates) {
+        addBlockRatesForDay(DayOfWeek.SATURDAY, blockRates);
+        return this;
+    }
+
+    public RatesCollection addSunBlockRates(BlockRate... blockRates) {
+        addBlockRatesForDay(DayOfWeek.SUNDAY, blockRates);
+        return this;
+    }
+
+    private void addBlockRatesForDay(DayOfWeek day, BlockRate... blockRates) {
+        for (BlockRate blockRate : blockRates) {
+            blockRate = blockRate.copy();
+            blockRate.setStartDay(day);
+            LocalTime rateStartTime = blockRate.getStartTime();
+            LocalTime rateEndTime = blockRate.getEndTime();
+            if (rateStartTime != null && rateEndTime != null) {
+                if (rateEndTime.isBefore(rateStartTime)) {
+                    blockRate.setEndDay(day.plus(1));
+                } else {
+                    blockRate.setEndDay(day);
+                }
+            }
+            if (blockRate.isFirstBlock()) {
+                setDayFirstBlock(blockRate.getStartDay(), blockRate);
+            } else {
+                circularBlockRates.add(blockRate);
+            }
+        }
     }
 
     public RatesCollection addBlockRates(BlockRate... blockRates) {

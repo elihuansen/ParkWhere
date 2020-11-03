@@ -7,6 +7,13 @@ import java.time.LocalTime;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class TimeHelper {
+    public static DayOfWeek[] WEEKDAYS = new DayOfWeek[]{
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY
+    };
     public static LocalTime MIDNIGHT = LocalTime.of(0, 0);
 
     public static boolean isBetweenInclusive(LocalTime first, LocalTime target, LocalTime second) {
