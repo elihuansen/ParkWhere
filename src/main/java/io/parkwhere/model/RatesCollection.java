@@ -17,13 +17,16 @@ public class RatesCollection {
 
     private CircularLinkedList<BlockRate> circularBlockRates;
     private HashMap<DayOfWeek, BlockRate> firstBlockByDay;
+    private List<BlockRate> blockRatesList;
 
     public RatesCollection() {
         this.circularBlockRates = new CircularLinkedList<>();
         this.firstBlockByDay    = new HashMap<>();
+        this.blockRatesList = new ArrayList<>();
     }
 
     public RatesCollection addWeekdayBlockRates(BlockRate... blockRates) {
+        blockRates = getOrderedCopyOfBlockRates(blockRates);
         for (DayOfWeek weekday : WEEKDAYS) {
             addBlockRatesForDay(weekday, blockRates);
         }
@@ -31,28 +34,45 @@ public class RatesCollection {
     }
 
     public RatesCollection addSatBlockRates(BlockRate... blockRates) {
+        blockRates = getOrderedCopyOfBlockRates(blockRates);
         addBlockRatesForDay(DayOfWeek.SATURDAY, blockRates);
         return this;
     }
 
     public RatesCollection addSunBlockRates(BlockRate... blockRates) {
+        blockRates = getOrderedCopyOfBlockRates(blockRates);
         addBlockRatesForDay(DayOfWeek.SUNDAY, blockRates);
         return this;
+    }
+
+    public List<BlockRate> getBlockRatesList() {
+        return blockRatesList;
+    }
+
+    private BlockRate[] getOrderedCopyOfBlockRates(BlockRate[] blockRates) {
+        BlockRate[] copy = Arrays.copyOf(blockRates, blockRates.length);
+        Arrays.sort(copy);
+        this.blockRatesList = Arrays.asList(copy);
+        return copy;
+    }
+
+    private void setBlockRateDay(DayOfWeek day, BlockRate blockRate) {
+        blockRate.setStartDay(day);
+        LocalTime rateStartTime = blockRate.getStartTime();
+        LocalTime rateEndTime = blockRate.getEndTime();
+        if (rateStartTime != null && rateEndTime != null) {
+            if (rateEndTime.isBefore(rateStartTime)) {
+                blockRate.setEndDay(day.plus(1));
+            } else {
+                blockRate.setEndDay(day);
+            }
+        }
     }
 
     private void addBlockRatesForDay(DayOfWeek day, BlockRate... blockRates) {
         for (BlockRate blockRate : blockRates) {
             blockRate = blockRate.copy();
-            blockRate.setStartDay(day);
-            LocalTime rateStartTime = blockRate.getStartTime();
-            LocalTime rateEndTime = blockRate.getEndTime();
-            if (rateStartTime != null && rateEndTime != null) {
-                if (rateEndTime.isBefore(rateStartTime)) {
-                    blockRate.setEndDay(day.plus(1));
-                } else {
-                    blockRate.setEndDay(day);
-                }
-            }
+            setBlockRateDay(day, blockRate);
             if (blockRate.isFirstBlock()) {
                 setDayFirstBlock(blockRate.getStartDay(), blockRate);
             } else {
