@@ -1,11 +1,14 @@
 package io.parkwhere.model;
 
+import io.parkwhere.exceptions.MultipleFirstBlockException;
+import io.parkwhere.exceptions.OverlappingBlockRatesException;
 import io.parkwhere.utils.TimeHelper;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Objects;
 
-public class BlockRate {
+public class BlockRate implements Comparable<BlockRate> {
     private DayOfWeek startDay;
     private LocalTime startTime;
     private DayOfWeek endDay;
@@ -174,5 +177,59 @@ public class BlockRate {
                 ", isFirstBlock=" + isFirstBlock +
                 ", isPartThereof=" + isPartThereof +
                 '}';
+    }
+
+    @Override
+    public int compareTo(BlockRate other) {
+        // System.out.println("================");
+        // System.out.println(this);
+        // System.out.println(other);
+        // System.out.println("================");
+        // System.out.println();
+
+        if (isFirstBlock) {
+            if (other.isFirstBlock) {
+                throw new MultipleFirstBlockException();
+            }
+            return -1;
+        } else if (other.isFirstBlock) {
+            return 1;
+        }
+
+        if (startDay == null) {
+            if (other.startDay == null) {
+                int startTimeComparison = startTime.compareTo(other.startTime);
+                if (startTimeComparison == 0) {
+                    throw new OverlappingBlockRatesException("Multiple block rates detected: " + this + " and " + other);
+                }
+                return startTimeComparison;
+            }
+            return -1;
+        }
+
+        int startDayComparison = startDay.compareTo(other.startDay);
+        if (startDayComparison == 0) {
+            return startTime.compareTo(other.startTime);
+        }
+        return startDayComparison;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlockRate blockRate = (BlockRate) o;
+        return totalMins == blockRate.totalMins &&
+                Double.compare(blockRate.amount, amount) == 0 &&
+                blockMins == blockRate.blockMins &&
+                startDay == blockRate.startDay &&
+                Objects.equals(startTime, blockRate.startTime) &&
+                endDay == blockRate.endDay &&
+                Objects.equals(endTime, blockRate.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startDay, startTime, endDay, endTime);
     }
 }
