@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  postgresql:
+    image: postgres:alpine
+    ports:
+      - "1679:5432"
+    environment:
+      POSTGRES_USER: parkwheredev
+      POSTGRES_PASSWORD: parkwheredev
+      POSTGRES_DB: parkwhere
+    volumes:
+      - ./src/main/resources/database/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql

@@ -1,6 +1,6 @@
 package io.parkwhere;
 
-import io.parkwhere.config.ConfigManager;
+import io.parkwhere.config.Configs;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.codec.BodyCodec;
@@ -23,16 +23,18 @@ class MainVerticleTest {
   }
 
   @Test
-  @DisplayName("Check that the server has started")
+  @DisplayName("Check that the server starts successfully")
   void checkServerHasStarted(Vertx vertx, VertxTestContext testContext) {
     WebClient webClient = WebClient.create(vertx);
-    webClient.get(ConfigManager.PORT, "localhost", "/")
+    webClient.get(Configs.PORT, "localhost", "/")
       .as(BodyCodec.string())
-      .send(testContext.succeeding(response -> testContext.verify(() -> {
-        assertEquals(200, response.statusCode());
-        assertTrue(response.body().length() > 0);
-        assertTrue(response.body().contains("Hello Vert.x!"));
-        testContext.completeNow();
-      })));
+      .send(testContext.succeeding(response ->
+          testContext.verify(() -> {
+            assertEquals(200, response.statusCode());
+            assertTrue(response.body().length() > 0);
+            assertTrue(response.body().contains("Hello Vert.x!"));
+            testContext.completeNow();
+          })
+      ));
   }
 }
