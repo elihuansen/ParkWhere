@@ -21,7 +21,7 @@ public class CarparkIntradayChargesTest {
                 new BlockRate("18:00", "23:59", 3)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(carpark, "12:00", "19:30");
@@ -43,7 +43,7 @@ public class CarparkIntradayChargesTest {
                 new BlockRate("08:00", "07:59", 0.1, 1)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(carpark, "12:00", "19:30");
@@ -64,7 +64,7 @@ public class CarparkIntradayChargesTest {
                 new BlockRate("18:54", "23:50", 4.08),
                 new BlockRate("23:51", "07:27", 40)
             );
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(carpark, "08:05", "23:53");
@@ -87,7 +87,7 @@ public class CarparkIntradayChargesTest {
                 new BlockRate("06:00", "05:59", 2.4)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(carpark, "12:00", "19:30");
         double expected = 2.4;

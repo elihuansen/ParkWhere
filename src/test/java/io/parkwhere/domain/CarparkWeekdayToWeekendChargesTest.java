@@ -37,7 +37,7 @@ public class CarparkWeekdayToWeekendChargesTest {
                 new BlockRate("07:00", "06:59", 2)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(carpark, SEP_4_FRI_11AM, SEP_6_MON_9PM);
         double expected =

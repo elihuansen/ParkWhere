@@ -2,6 +2,7 @@ package io.parkwhere.model;
 
 public class Carpark extends BaseResource {
 
+    private int id;
     private RatesCollection ratesCollection;
     private String name;
     private String address;
@@ -9,11 +10,20 @@ public class Carpark extends BaseResource {
 
     public Carpark() {}
 
-    public Carpark(RatesCollection ratesCollection, String name, String address, String remarks) {
+    public Carpark(int id, RatesCollection ratesCollection, String name, String address, String remarks) {
+        this.id = id;
         this.ratesCollection = ratesCollection;
         this.name = name;
         this.address = address;
         this.remarks = remarks;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -55,7 +65,8 @@ public class Carpark extends BaseResource {
     @Override
     public String toString() {
         return "Carpark{" +
-                "ratesCollection=" + ratesCollection +
+                "id=" + id +
+                ", ratesCollection=" + ratesCollection +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", remarks='" + remarks + '\'' +

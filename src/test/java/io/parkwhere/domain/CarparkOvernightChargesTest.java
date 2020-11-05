@@ -24,7 +24,7 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("08:00", "04:00", 20)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(carpark, "12:00", "04:00");
@@ -47,7 +47,7 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("18:00", "23:59", 3)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
 
         double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
@@ -74,7 +74,7 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("00:00", "23:59", 1.2, 60)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
         double result = carparkController.calculate(
             carpark,
@@ -99,7 +99,7 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("18:00", "05:59", 2.4, 60)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
 
         LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 4, 30);
