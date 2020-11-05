@@ -1,20 +1,23 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
-  java
-  application
-  id("com.github.johnrengelman.shadow") version "4.0.3"
+  id "java"
+  id "application"
+  id "com.github.johnrengelman.shadow" version "4.0.3"
 }
+
+group 'io.parkwhere'
 
 repositories {
   mavenCentral()
 }
 
-val vertxVersion = "3.9.4"
-val junitVersion = "5.3.2"
+ext {
+  vertxVersion = "3.9.4"
+  junitVersion = "5.3.2"
+}
 
 dependencies {
   implementation("io.vertx:vertx-core:$vertxVersion")
+  implementation("io.vertx:vertx-pg-client:$vertxVersion")
 
   testImplementation("io.vertx:vertx-junit5:$vertxVersion")
   testImplementation("io.vertx:vertx-web-client:$vertxVersion")
@@ -30,20 +33,20 @@ application {
   mainClassName = "io.vertx.core.Launcher"
 }
 
-val mainVerticleName = "io.vertx.starter.MainVerticle"
-val watchForChange = "src/**/*.java"
-val doOnChange = "${projectDir}/gradlew classes"
+def mainVerticleName = "io.vertx.starter.MainVerticle"
+def watchForChange = "src/**/*.java"
+def doOnChange = "${projectDir}/gradlew classes"
 
 tasks {
   test {
     useJUnitPlatform()
   }
 
-  getByName<JavaExec>("run") {
-    args = listOf("run", mainVerticleName, "--redeploy=${watchForChange}", "--launcher-class=${application.mainClassName}", "--on-redeploy=${doOnChange}")
+  run {
+    args = ["run", mainVerticleName, "--redeploy=${watchForChange}", "--launcher-class=${application.mainClassName}", "--on-redeploy=${doOnChange}"]
   }
 
-  withType<ShadowJar> {
+  shadowJar {
     classifier = "fat"
     manifest {
       attributes["Main-Verticle"] = mainVerticleName
