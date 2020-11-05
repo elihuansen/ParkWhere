@@ -1,43 +1,14 @@
-package io.parkwhere.controllers;
+package io.parkwhere.domain;
 
 import io.parkwhere.model.Carpark;
 import io.parkwhere.model.Charge;
-import io.vertx.core.json.JsonObject;
 
-import javax.ws.rs.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Path("/carpark")
-public class CarparkController {
+public class CarparkChargeCalculator {
 
-    public CarparkController() {}
-
-    @GET
-    @Path("/")
-    public Carpark getAllCarparks() {
-        return null;
-    }
-
-    @GET
-    @Path("/:id")
-    public Carpark getCarpark(@PathParam("id") int id) {
-        return null;
-    }
-
-    @POST
-    @Path("/")
-    @Consumes("application/json")
-    public JsonObject createCarpark(Carpark carpark) {
-        carpark.setId(1);
-        return JsonObject.mapFrom(carpark);
-    }
-
-    @PUT
-    @Path("/:id")
-    public Carpark updateCarpark(@PathParam("id") int id) {
-        return null;
-    }
+    public CarparkChargeCalculator() {}
 
     public double calculate(Carpark carpark, String entranceTime, String exitTime) {
         LocalDateTime now = LocalDateTime.now();

@@ -1,6 +1,5 @@
 package io.parkwhere.domain;
 
-import io.parkwhere.controllers.CarparkController;
 import io.parkwhere.model.BlockRate;
 import io.parkwhere.model.Carpark;
 import io.parkwhere.model.RatesCollection;
@@ -23,8 +22,8 @@ public class CarparkIntradayChargesTest {
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "19:30");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(carpark, "12:00", "19:30");
         double expected =
             2.0 +      // first block of 60m - 1200 to 1300
             1.4 * 10 + // $1.40 for 10 blocks of 30m - 1300 to 1759, 1730 to 1759 included
@@ -45,8 +44,8 @@ public class CarparkIntradayChargesTest {
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "19:30");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(carpark, "12:00", "19:30");
         double expected = 5 + 32.9;
 
         Assertions.assertEquals(expected, result);
@@ -66,8 +65,8 @@ public class CarparkIntradayChargesTest {
             );
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "08:05", "23:53");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(carpark, "08:05", "23:53");
         double expected =
             1 + // first block of 60m - 0805 to 0848
             0.1 * 224 + // $0.10 for 224 blocks of 1m - 0849 to 1233
@@ -88,8 +87,8 @@ public class CarparkIntradayChargesTest {
             );
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "19:30");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(carpark, "12:00", "19:30");
         double expected = 2.4;
 
         Assertions.assertEquals(expected, result);

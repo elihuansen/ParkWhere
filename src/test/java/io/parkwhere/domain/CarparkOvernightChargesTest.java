@@ -1,6 +1,5 @@
 package io.parkwhere.domain;
 
-import io.parkwhere.controllers.CarparkController;
 import io.parkwhere.model.BlockRate;
 import io.parkwhere.model.Carpark;
 import io.parkwhere.model.RatesCollection;
@@ -26,8 +25,8 @@ public class CarparkOvernightChargesTest {
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "04:00");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(carpark, "12:00", "04:00");
         double expected = 5 + 20;
 
         Assertions.assertEquals(expected, result);
@@ -48,9 +47,9 @@ public class CarparkOvernightChargesTest {
             );
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
 
-        double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
+        double result = carparkChargeCalculator.calculate(carpark, entranceDateTime, exitDateTime);
         double expected =
             2.0 +      // 15 Jan 2020 09:30 to 10:30 - $2 first 1h
             1.4 * 15 + // 15 Jan 2020 10:31 to 17:59 - $1.40 per 30m (15 blocks)
@@ -75,8 +74,8 @@ public class CarparkOvernightChargesTest {
             );
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(
             carpark,
             entranceDateTime,
             exitDateTime
@@ -100,11 +99,11 @@ public class CarparkOvernightChargesTest {
             );
 
         Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
 
         LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 4, 30);
         LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 17, 12, 1);
-        double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
+        double result = carparkChargeCalculator.calculate(carpark, entranceDateTime, exitDateTime);
         double expected =
             2 +        // 15 Jan 2020 04:30 to 05:30 - $2 for first 60m (1 block)
             2.4 * 1 +  // 15 Jan 2020 05:31 to 05:59 - $2.40 per 60m (1 block)
