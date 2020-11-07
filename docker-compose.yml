@@ -2,6 +2,7 @@ version: "3.3"
 
 services:
   postgresql:
+    container_name: parkwhere-app_postgresql
     image: postgres:alpine
     ports:
       - "1679:5432"
