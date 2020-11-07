@@ -8,15 +8,23 @@ then
     echo "------ STOPPED ------"
     echo "Removing containers:"
     echo $containers | xargs docker rm
-    echo "------ REMOVED ------"
 fi
-echo "Starting parkwhere..."
+
+printf "\nDocker Network:\n"
+docker network ls
+
+printf "\nStarting parkwhere...\n"
+
 docker-compose up -d
 
 echo "Waiting for postgres container to be up"
 timeout 90s bash -c 'until docker exec parkwhere-app_postgresql pg_isready ; do sleep 1 ; done'
 postgres_port=$(docker port parkwhere-app_postgresql)
 echo "postgres container running : $postgres_port"
+
+printf "\nDocker Containers:\n"
+docker ps
+printf "\n"
 
 containers=$(docker ps --filter "name=parkwhere*" --format "{{.ID}}")
 if [ ! -z "$containers" ]
