@@ -1,5 +1,10 @@
 package io.parkwhere.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.parkwhere.model.serializers.LocalDateTimeSerializer;
+
+import java.time.LocalDateTime;
+
 public class Carpark extends BaseResource {
 
     private int id;
@@ -7,6 +12,12 @@ public class Carpark extends BaseResource {
     private String name;
     private String address;
     private String remarks;
+
+    @JsonSerialize(using=LocalDateTimeSerializer.class)
+    private LocalDateTime createdAt;
+
+    @JsonSerialize(using=LocalDateTimeSerializer.class)
+    private LocalDateTime updatedAt;
 
     public Carpark() {}
 
@@ -22,8 +33,9 @@ public class Carpark extends BaseResource {
         return id;
     }
 
-    public void setId(int id) {
+    public Carpark setId(int id) {
         this.id = id;
+        return this;
     }
 
     public String getName() {
@@ -59,6 +71,24 @@ public class Carpark extends BaseResource {
 
     public Carpark setRemarks(String remarks) {
         this.remarks = remarks;
+        return this;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Carpark setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Carpark setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
         return this;
     }
 

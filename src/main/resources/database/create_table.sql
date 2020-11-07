@@ -14,9 +14,9 @@ CREATE TABLE block_rate (
     id SERIAL NOT NULL PRIMARY KEY,
     carpark_id INTEGER REFERENCES carpark(id),
 
-    start_day SMALLINT, -- 0 = Monday, 7 = Sunday
+    start_day SMALLINT, -- 1 = Monday, 7 = Sunday
     start_time TIME NOT NULL,
-    end_day SMALLINT, -- 0 = Monday, 7 = Sunday
+    end_day SMALLINT, -- 1 = Monday, 7 = Sunday
     end_time TIME NOT NULL,
 
     amount NUMERIC(2) NOT NULL,
