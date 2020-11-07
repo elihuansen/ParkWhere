@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 @DisplayName("Carpark Intraday Charges Test")
 public class CarparkIntradayChargesTest {
     @Test
@@ -24,7 +26,11 @@ public class CarparkIntradayChargesTest {
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "19:30");
+        double result = carparkController.calculate(
+            carpark,
+            LocalDateTime.of(2020, 11, 3, 12, 0),
+            LocalDateTime.of(2020, 11, 3, 19, 30)
+        );
         double expected =
             2.0 +      // first block of 60m - 1200 to 1300
             1.4 * 10 + // $1.40 for 10 blocks of 30m - 1300 to 1759, 1730 to 1759 included
@@ -46,7 +52,11 @@ public class CarparkIntradayChargesTest {
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "19:30");
+        double result = carparkController.calculate(
+            carpark,
+            LocalDateTime.of(2020, 11, 3, 12, 0),
+            LocalDateTime.of(2020, 11, 3, 19, 30)
+        );
         double expected = 5 + 32.9;
 
         Assertions.assertEquals(expected, result);
@@ -67,7 +77,11 @@ public class CarparkIntradayChargesTest {
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "08:05", "23:53");
+        double result = carparkController.calculate(
+            carpark,
+            LocalDateTime.of(2020, 11, 3, 8, 5),
+            LocalDateTime.of(2020, 11, 3, 23, 53)
+        );
         double expected =
             1 + // first block of 60m - 0805 to 0848
             0.1 * 224 + // $0.10 for 224 blocks of 1m - 0849 to 1233
@@ -89,7 +103,11 @@ public class CarparkIntradayChargesTest {
 
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "19:30");
+        double result = carparkController.calculate(
+            carpark,
+            LocalDateTime.of(2020, 11, 3, 12, 0),
+            LocalDateTime.of(2020, 11, 3, 19, 30)
+        );
         double expected = 2.4;
 
         Assertions.assertEquals(expected, result);
