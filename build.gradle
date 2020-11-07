@@ -54,6 +54,7 @@ def doOnChange = "${projectDir}/gradlew classes"
 tasks {
   test {
     useJUnitPlatform()
+    exclude '**/**integration'
   }
 
   run {

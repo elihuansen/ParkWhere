@@ -1,4 +1,4 @@
-package io.parkwhere.api;
+package io.parkwhere.integration;
 
 import io.parkwhere.MainVerticle;
 import io.vertx.core.AbstractVerticle;
