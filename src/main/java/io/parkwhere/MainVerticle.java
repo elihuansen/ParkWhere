@@ -4,6 +4,7 @@ import com.zandero.rest.RestBuilder;
 import io.parkwhere.config.Configs;
 import io.parkwhere.database.ConnectionManager;
 import io.parkwhere.logging.LogManager;
+import io.parkwhere.services.HeartbeatService;
 import io.parkwhere.services.carpark.CarparkService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.logging.Logger;
@@ -33,6 +34,7 @@ public class MainVerticle extends AbstractVerticle {
     private void startHttpServer(PgPool pool) {
         Router router = new RestBuilder(vertx)
             .register(new CarparkService(pool))
+            .register(new HeartbeatService())
             .build();
 
         int port = Configs.PORT;

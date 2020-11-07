@@ -26,13 +26,13 @@ class MainVerticleTest {
   @DisplayName("Check that the server starts successfully")
   void checkServerHasStarted(Vertx vertx, VertxTestContext testContext) {
     WebClient webClient = WebClient.create(vertx);
-    webClient.get(Configs.PORT, "localhost", "/")
+    webClient.get(Configs.PORT, "localhost", "/ping")
       .as(BodyCodec.string())
       .send(testContext.succeeding(response ->
           testContext.verify(() -> {
             assertEquals(200, response.statusCode());
             assertTrue(response.body().length() > 0);
-            assertTrue(response.body().contains("Hello Vert.x!"));
+            assertTrue(response.body().contains("pong!"));
             testContext.completeNow();
           })
       ));
