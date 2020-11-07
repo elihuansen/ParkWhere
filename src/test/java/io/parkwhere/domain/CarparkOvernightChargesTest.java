@@ -27,7 +27,9 @@ public class CarparkOvernightChargesTest {
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
 
         CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, "12:00", "04:00");
+        LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 12, 30);
+        LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 4, 0);
+        double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
         double expected = 5 + 20;
 
         Assertions.assertEquals(expected, result);
@@ -36,9 +38,6 @@ public class CarparkOvernightChargesTest {
     @DisplayName("Check over-night charge for a typical carpark is correct 2")
     @Test
     public void checkOverNightCharge2() {
-        LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 9, 30);
-        LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 12, 0);
-
         RatesCollection ratesCollection = new RatesCollection()
             .addWeekdayBlockRates(
                 new BlockRate(true, 2.0, 60),
@@ -50,6 +49,8 @@ public class CarparkOvernightChargesTest {
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
 
+        LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 9, 30);
+        LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 12, 0);
         double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
         double expected =
             2.0 +      // 15 Jan 2020 09:30 to 10:30 - $2 first 1h
@@ -65,9 +66,6 @@ public class CarparkOvernightChargesTest {
     @DisplayName("Check overnight charge for a simple carpark is correct")
     @Test
     public void checkSimpleCarparkCharge() {
-        LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 9, 30);
-        LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 12, 30);
-
         RatesCollection ratesCollection = new RatesCollection()
             .addWeekdayBlockRates(
                 new BlockRate(true, 2.0, 60),
@@ -76,6 +74,9 @@ public class CarparkOvernightChargesTest {
 
         Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
         CarparkController carparkController = new CarparkController();
+
+        LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 9, 30);
+        LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 12, 30);
         double result = carparkController.calculate(
             carpark,
             entranceDateTime,
