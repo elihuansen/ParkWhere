@@ -14,7 +14,7 @@ echo "Starting parkwhere..."
 docker-compose up -d
 
 echo "Waiting for postgresql to be up"
-gtimeout 90s bash -c 'until docker exec parkwhere-app_postgresql_1 pg_isready ; do sleep 1 ; done'
+timeout 90s bash -c 'until docker exec parkwhere-app_postgresql_1 pg_isready ; do sleep 1 ; done'
 
 containers=$(docker ps --filter "name=parkwhere*" --format "{{.ID}}")
 if [ ! -z "$containers" ]
