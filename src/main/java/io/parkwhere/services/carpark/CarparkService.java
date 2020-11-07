@@ -1,6 +1,5 @@
 package io.parkwhere.services.carpark;
 
-import com.zandero.rest.annotation.BodyParam;
 import io.parkwhere.database.CarparkDAO;
 import io.parkwhere.domain.CarparkChargeCalculator;
 import io.parkwhere.logging.LogManager;
@@ -13,8 +12,6 @@ import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.SqlConnection;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import java.util.List;
 
 @Path("/carpark")
 public class CarparkService {
@@ -86,7 +83,7 @@ public class CarparkService {
     @Path("/")
     @Consumes("application/json")
     @Produces("application/json")
-    public Promise<JsonObject> createCarpark(@BodyParam Carpark carpark) {
+    public Promise<JsonObject> createCarpark(Carpark carpark) {
         Promise<JsonObject> promise = Promise.promise();
         pgPool.getConnection(event -> {
             if (event.succeeded()) {

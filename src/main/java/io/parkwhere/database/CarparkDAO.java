@@ -19,8 +19,8 @@ public class CarparkDAO {
 
     private final static String CARPARK_QUERY_BY_ID  = "SELECT id, name, address, created_at, updated_at FROM carpark WHERE id=$1";
     private final static String CARPARK_QUERY_ALL    = "SELECT id, name, address, created_at, updated_at FROM carpark";
-    private final static String CARPARK_INSERT_ONE   = "INSERT INTO carpark (name, address) VALUES ($1, $2)";
-    private final static String CARPARK_INSERT_MANY  = "INSERT INTO carpark (name, address) VALUES (?)";
+    private final static String CARPARK_INSERT_ONE   = "INSERT INTO carpark (name, address) VALUES ($1, $2) RETURNING id";
+    private final static String CARPARK_INSERT_MANY  = "INSERT INTO carpark (name, address) VALUES (?) RETURNING id";
     private final static String CARPARK_UPDATE_ONE   = "UPDATE carpark SET (name, address)=($2, $3) WHERE id=$1";
     private final static String CARPARK_DELETE_BY_ID = "DELETE FROM carpark WHERE id=$1 RETURNING id, name, address";
 
@@ -85,9 +85,14 @@ public class CarparkDAO {
                 Tuple.of(carpark.getName(), carpark.getAddress()),
                 ar -> {
                     RowSet<Row> rows = ar.result();
-                    if (rows.rowCount() == 1) {
-                        handler.handle(true);
+                    if (ar.succeeded()) {
+                        if (rows.rowCount() == 1) {
+                            handler.handle(true);
+                        } else {
+                            handler.handle(false);
+                        }
                     } else {
+                        LOGGER.warn(ar.cause());
                         handler.handle(false);
                     }
                 }
@@ -135,16 +140,17 @@ public class CarparkDAO {
             .preparedQuery(CARPARK_DELETE_BY_ID)
             .execute(Tuple.of(id), ar -> {
                 RowSet<Row> rows = ar.result();
-                LOGGER.info("rows " + ar.succeeded());
-                for (Row row : rows) {
-                    LOGGER.info("row => " + row);
-                    Carpark carpark = new Carpark()
-                        .setId(row.getInteger("id"))
-                        .setName(row.getString("name"))
-                        .setAddress(row.getString("address"));
-                    handler.handle(carpark);
-                    return;
+                if (ar.succeeded()) {
+                    for (Row row : rows) {
+                        Carpark carpark = new Carpark()
+                            .setId(row.getInteger("id"))
+                            .setName(row.getString("name"))
+                            .setAddress(row.getString("address"));
+                        handler.handle(carpark);
+                        return;
+                    }
                 }
+                LOGGER.warn("Failed to delete carpark {}", id, ar.cause());
                 handler.handle(null);
             });
     }

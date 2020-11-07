@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="io.parkwhere in parkwhere-api.test" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="parkwhere-api.test" />
+    <useClassPathOnly />
+    <option name="PACKAGE_NAME" value="io.parkwhere" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="package" />
+    <option name="VM_PARAMETERS" value="-ea -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory" />
+    <option name="PARAMETERS" value="" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="Sh.BeforeRunTask" RUN_CONFIG_NAME="Prepare Test DB" RUN_CONFIG_TYPE="ShConfigurationType" />
+    </method>
+  </configuration>
+</component>

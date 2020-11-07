@@ -10,5 +10,5 @@ services:
       POSTGRES_PASSWORD: parkwheredev
       POSTGRES_DB: parkwhere
     volumes:
-      - ./src/main/resources/database/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
-      - ./src/main/resources/database/bootstrap_db.sql:/docker-entrypoint-initdb.d/bootstrap_db.sql
+      - ./src/main/resources/database/create_table.sql:/docker-entrypoint-initdb.d/s1_create_table.sql
+      - ./src/main/resources/database/bootstrap_test_db.sql:/docker-entrypoint-initdb.d/s2_bootstrap_test_db.sql
