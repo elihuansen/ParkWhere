@@ -4,7 +4,7 @@ public class Configs {
 
     public final static int PORT = 1337;
     public final static int DB_PORT    = getenv("DB_PORT", 1679);
-    public final static String DB_HOST = getenv("DB_HOST", "0.0.0.0");
+    public final static String DB_HOST = getenv("DB_HOST", "localhost");
     public final static String DB_NAME = getenv("DB_NAME", "parkwhere");
     public final static String DB_USER = getenv("DB_USER", "parkwheredev");
     public final static String DB_PASS = getenv("DB_PASS", "parkwheredev");
