@@ -1,10 +1,14 @@
 package io.parkwhere;
 
+import com.zandero.rest.RestBuilder;
 import io.parkwhere.config.Configs;
 import io.parkwhere.database.ConnectionManager;
 import io.parkwhere.logging.LogManager;
+import io.parkwhere.services.HeartbeatService;
+import io.parkwhere.services.carpark.CarparkService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.logging.Logger;
+import io.vertx.ext.web.Router;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.SqlConnection;
 
@@ -15,8 +19,8 @@ public class MainVerticle extends AbstractVerticle {
     @Override
     public void start() {
         LOGGER.info("Starting MainVerticle...");
-        startHttpServer();
         PgPool pool = new ConnectionManager(vertx).getPool();
+        startHttpServer(pool);
         pool.getConnection(event -> {
             if (event.succeeded()) {
                 SqlConnection conn = event.result();
@@ -27,10 +31,15 @@ public class MainVerticle extends AbstractVerticle {
         });
     }
 
-    private void startHttpServer() {
+    private void startHttpServer(PgPool pool) {
+        Router router = new RestBuilder(vertx)
+            .register(new CarparkService(pool))
+            .register(new HeartbeatService())
+            .build();
+
         int port = Configs.PORT;
         vertx.createHttpServer()
-            .requestHandler(req -> req.response().end("Hello Vert.x!"))
+            .requestHandler(router)
             .listen(port);
         LOGGER.info("Listening on {}", port);
     }

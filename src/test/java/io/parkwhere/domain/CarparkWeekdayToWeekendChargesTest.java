@@ -1,6 +1,5 @@
 package io.parkwhere.domain;
 
-import io.parkwhere.controllers.CarparkController;
 import io.parkwhere.model.BlockRate;
 import io.parkwhere.model.Carpark;
 import io.parkwhere.model.RatesCollection;
@@ -37,9 +36,9 @@ public class CarparkWeekdayToWeekendChargesTest {
                 new BlockRate("07:00", "06:59", 2)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
-        double result = carparkController.calculate(carpark, SEP_4_FRI_11AM, SEP_6_MON_9PM);
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
+        double result = carparkChargeCalculator.calculate(carpark, SEP_4_FRI_11AM, SEP_6_MON_9PM);
         double expected =
             5.0 * 1 +  // Fri 09/04 11:00 to Fri 09/04 13:00 - $5.0 per 120m = $5.0 (1 blocks)
             1.1 * 60 + // Fri 09/04 13:01 to Sat 09/05 04:00 - $1.1 per 15m = $66.0 (60 blocks)

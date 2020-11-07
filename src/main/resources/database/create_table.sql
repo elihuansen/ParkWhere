@@ -12,11 +12,11 @@ CREATE TABLE carpark(
 DROP TABLE IF EXISTS block_rate;
 CREATE TABLE block_rate (
     id SERIAL NOT NULL PRIMARY KEY,
-    carpark_id INTEGER REFERENCES carpark(id),
+    carpark_id INTEGER REFERENCES carpark(id) ON DELETE CASCADE,
 
-    start_day SMALLINT, -- 0 = Monday, 7 = Sunday
+    start_day SMALLINT, -- 1 = Monday, 7 = Sunday
     start_time TIME NOT NULL,
-    end_day SMALLINT, -- 0 = Monday, 7 = Sunday
+    end_day SMALLINT, -- 1 = Monday, 7 = Sunday
     end_time TIME NOT NULL,
 
     amount NUMERIC(2) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE block_rate (
 DROP TABLE IF EXISTS first_block_rate;
 CREATE TABLE first_block_rate(
     id SERIAL NOT NULL PRIMARY KEY,
-    carpark_id INTEGER REFERENCES carpark(id),
+    carpark_id INTEGER REFERENCES carpark(id) ON DELETE CASCADE,
 
     amount NUMERIC(2) NOT NULL,
     block_mins INTEGER NOT NULL,
@@ -52,4 +52,3 @@ CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON carpark
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
-

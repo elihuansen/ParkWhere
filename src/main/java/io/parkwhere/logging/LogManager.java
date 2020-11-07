@@ -6,7 +6,6 @@ import io.vertx.core.logging.LoggerFactory;
 public class LogManager {
 
     static {
-        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
         LoggerFactory.initialise();
     }
 

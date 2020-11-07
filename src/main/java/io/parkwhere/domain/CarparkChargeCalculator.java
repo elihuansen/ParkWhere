@@ -1,4 +1,4 @@
-package io.parkwhere.controllers;
+package io.parkwhere.domain;
 
 import io.parkwhere.model.Carpark;
 import io.parkwhere.model.Charge;
@@ -6,12 +6,11 @@ import io.parkwhere.model.Charge;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class CarparkController {
+public class CarparkChargeCalculator {
 
-    public CarparkController() {}
+    public CarparkChargeCalculator() {}
 
     public double calculate(Carpark carpark, String entranceTime, String exitTime) {
-
         LocalDateTime now = LocalDateTime.now();
         int entranceHour = Integer.parseInt(entranceTime.substring(0, 2));
         int entranceMin  = Integer.parseInt(entranceTime.substring(3));

@@ -1,6 +1,5 @@
 package io.parkwhere.domain;
 
-import io.parkwhere.controllers.CarparkController;
 import io.parkwhere.model.BlockRate;
 import io.parkwhere.model.Carpark;
 import io.parkwhere.model.RatesCollection;
@@ -24,12 +23,12 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("08:00", "04:00", 20)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
 
-        CarparkController carparkController = new CarparkController();
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
         LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 12, 30);
         LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 4, 0);
-        double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
+        double result = carparkChargeCalculator.calculate(carpark, entranceDateTime, exitDateTime);
         double expected = 5 + 20;
 
         Assertions.assertEquals(expected, result);
@@ -46,12 +45,12 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("18:00", "23:59", 3)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
 
         LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 9, 30);
         LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 12, 0);
-        double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
+        double result = carparkChargeCalculator.calculate(carpark, entranceDateTime, exitDateTime);
         double expected =
             2.0 +      // 15 Jan 2020 09:30 to 10:30 - $2 first 1h
             1.4 * 15 + // 15 Jan 2020 10:31 to 17:59 - $1.40 per 30m (15 blocks)
@@ -72,12 +71,12 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("00:00", "23:59", 1.2, 60)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
 
         LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 9, 30);
         LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 16, 12, 30);
-        double result = carparkController.calculate(
+        double result = carparkChargeCalculator.calculate(
             carpark,
             entranceDateTime,
             exitDateTime
@@ -100,12 +99,12 @@ public class CarparkOvernightChargesTest {
                 new BlockRate("18:00", "05:59", 2.4, 60)
             );
 
-        Carpark carpark = new Carpark(ratesCollection, "Carpark 1", "1 A Road", "...");
-        CarparkController carparkController = new CarparkController();
+        Carpark carpark = new Carpark(1, ratesCollection, "Carpark 1", "1 A Road", "...");
+        CarparkChargeCalculator carparkChargeCalculator = new CarparkChargeCalculator();
 
         LocalDateTime entranceDateTime = LocalDateTime.of(2020, Month.JANUARY, 15, 4, 30);
         LocalDateTime exitDateTime     = LocalDateTime.of(2020, Month.JANUARY, 17, 12, 1);
-        double result = carparkController.calculate(carpark, entranceDateTime, exitDateTime);
+        double result = carparkChargeCalculator.calculate(carpark, entranceDateTime, exitDateTime);
         double expected =
             2 +        // 15 Jan 2020 04:30 to 05:30 - $2 for first 60m (1 block)
             2.4 * 1 +  // 15 Jan 2020 05:31 to 05:59 - $2.40 per 60m (1 block)
