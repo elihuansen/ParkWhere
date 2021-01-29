@@ -23,4 +23,8 @@ public class Configs {
         String envVariable = System.getenv(key);
         return (envVariable != null) ? envVariable : defaultValue;
     }
+
+    public static void bxMethod() {
+        System.out.println("DO SOMETHING STUPID");
+    }
 }
